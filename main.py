@@ -1,13 +1,13 @@
 #!/usr/bin/python3
 
 from pathlib import Path
-from tkinter import Tk, messagebox, filedialog, END, Label, Button, Entry, Frame
+from tkinter import Tk, messagebox, filedialog, Label, Button, Entry, Frame, StringVar
 
 import docx2txt
 
 
 class DocxImageExtractorApp:
-    file_path_text: Entry
+    dir_path_var: StringVar
 
     def __init__(self):
         root = Tk()
@@ -18,14 +18,10 @@ class DocxImageExtractorApp:
         main_frame = Frame(root)
         main_frame.pack(pady=20)
 
-        label = Label(main_frame, text='Путь к папке с docx-файлами:')
-        label.grid(row=0, column=0)
-
-        self.file_path_text = Entry(main_frame, width=50)
-        self.file_path_text.grid(row=0, column=1, padx=5)
-
-        select_dir_button = Button(main_frame, text='...', command=self.select_dir_callback)
-        select_dir_button.grid(row=0, column=2)
+        Label(main_frame, text='Путь к папке с docx-файлами:').grid(row=0, column=0)
+        self.dir_path_var = StringVar()
+        Entry(main_frame, width=50, textvariable=self.dir_path_var).grid(row=0, column=1, padx=5)
+        Button(main_frame, text='...', command=self.select_dir_callback).grid(row=0, column=2)
 
         button_frame = Frame(root)
         button_frame.pack()
@@ -38,11 +34,10 @@ class DocxImageExtractorApp:
     def select_dir_callback(self) -> None:
         dir_path = filedialog.askdirectory(title='Выберите папку с DOCX-файлами')
         if not not dir_path:
-            self.file_path_text.delete(0, END)
-            self.file_path_text.insert(0, dir_path)
+            self.dir_path_var.set(dir_path)
 
     def extract_images_callback(self) -> None:
-        docx_files_path = Path(self.file_path_text.get())
+        docx_files_path = Path(self.dir_path_var.get())
 
         if not docx_files_path.is_dir():
             messagebox.showwarning('Внимание!', f'Папка "{docx_files_path}" не существует')
