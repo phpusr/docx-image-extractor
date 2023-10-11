@@ -1,5 +1,7 @@
+#!/usr/bin/python3
+
 from pathlib import Path
-from tkinter import Tk, Label, Button, messagebox, filedialog, Entry, END
+from tkinter import Tk, messagebox, filedialog, END, Label, Button, Entry, Frame
 
 import docx2txt
 
@@ -11,25 +13,33 @@ class DocxImageExtractorApp:
         root = Tk()
         root.title('DOCX image extractor')
         root.resizable(False, False)
-        root.geometry('600x130')
+        root.geometry('600x120')
 
-        label = Label(root, text='Путь к папке с docx-файлами:')
-        label.grid(row=0, column=0, pady=20)
+        main_frame = Frame(root)
+        main_frame.pack(pady=20)
 
-        self.file_path_text = Entry(root, width=50)
+        label = Label(main_frame, text='Путь к папке с docx-файлами:')
+        label.grid(row=0, column=0)
+
+        self.file_path_text = Entry(main_frame, width=50)
         self.file_path_text.grid(row=0, column=1, padx=5)
 
-        select_dir_button = Button(root, text='...', command=self.select_dir_callback)
+        select_dir_button = Button(main_frame, text='...', command=self.select_dir_callback)
         select_dir_button.grid(row=0, column=2)
 
-        extract_button = Button(root, text='Распаковать', command=self.extract_images_callback)
-        extract_button.grid(row=1, column=0, columnspan=3)
+        button_frame = Frame(root)
+        button_frame.pack()
+
+        Button(button_frame, text='Распаковать', command=self.extract_images_callback).grid(row=0, column=1)
+        Button(button_frame, text='Выход', command=root.destroy).grid(row=0, column=2)
 
         root.mainloop()
 
     def select_dir_callback(self) -> None:
-        self.file_path_text.delete(0, END)
-        self.file_path_text.insert(0, filedialog.askdirectory(title='Выберите папку с DOCX-файлами'))
+        dir_path = filedialog.askdirectory(title='Выберите папку с DOCX-файлами')
+        if not not dir_path:
+            self.file_path_text.delete(0, END)
+            self.file_path_text.insert(0, dir_path)
 
     def extract_images_callback(self) -> None:
         docx_files_path = Path(self.file_path_text.get())
